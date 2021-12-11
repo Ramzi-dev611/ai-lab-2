@@ -61,3 +61,34 @@ class MinMaxPredictor:
                     returned_action = action
             return returned_action, min_evaluation
 
+    @classmethod
+    def alpha_beta(cls, state: list, turn: bool, alpha: int = 10000, beta: int = -10000):
+        if cls.final(state):
+            return (), cls.utility(state, turn)
+
+        if turn:
+            max_evaluation = -1000
+            returned_action = ()
+            for action in cls.actions(state):
+                act, evaluation = cls.alpha_beta(cls.result(state, action), not turn, alpha, beta)
+                if max_evaluation < evaluation:
+                    max_evaluation = evaluation
+                    returned_action = action
+                alpha = max(alpha, evaluation)
+                if beta <= alpha:
+                    break
+            return returned_action, max_evaluation
+        else:
+            min_evaluation = 10000
+            returned_action = ()
+            for action in cls.actions(state):
+                taken_action, evaluation = cls.alpha_beta(cls.result(state, action), not turn, alpha, beta)
+                if min_evaluation > evaluation:
+                    min_evaluation = evaluation
+                    returned_action = action
+                beta = min(beta, evaluation)
+                if beta <= alpha:
+                    break
+            return returned_action, min_evaluation
+
+

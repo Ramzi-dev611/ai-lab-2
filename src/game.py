@@ -47,9 +47,18 @@ class Game:
         index, new_size = MinMaxPredictor.minmax(self.state, False)
         return index, new_size
 
+    def fast_cpu_find_best_move(self):
+        index, new_size = MinMaxPredictor.alpha_beta(self.state, False)
+        return index, new_size
+
     def cpu_move(self):
         if not self.game_over():
             (index, size), evaluation = self.cpu_find_best_move()
+            self.change_stack(index, self.state[index], size)
+
+    def fast_cpu_move(self):
+        if not self.game_over():
+            (index, size), evaluation = self.fast_cpu_find_best_move()
             self.change_stack(index, self.state[index], size)
 
     def start_game(self):
@@ -66,3 +75,18 @@ class Game:
                     print("Good Game, you won")
                 continue
             self.cpu_move()
+
+    def start_fast_game(self):
+        game_on = True
+        while game_on:
+            print(self.state)
+            lost = self.player_move()
+            if not self.game_over():
+                print(self.state)
+                print("CPU's turn")
+            else:
+                game_on = False
+                if not lost:
+                    print("Good Game, you won")
+                continue
+            self.fast_cpu_move()
