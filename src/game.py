@@ -1,3 +1,6 @@
+from minmax import MinMaxPredictor
+
+
 class Game:
     size: int
     state: list
@@ -22,28 +25,44 @@ class Game:
     def player_move(self):
         if self.game_over():
             print("Game over. You lost")
+            return True
         else:
             if len(self.state) > 1:
                 stack_index = 0
                 while stack_index == 0 or stack_index > len(self.state) or self.state[stack_index] <= 2:
-                    stack_index = int(input("Which stack you want to divide next? ")) - 1
+                    stack_index = int(input("Which stack you want to divide next?\t")) - 1
                 stack_to_be_changed = self.state[stack_index]
                 stack_size = 0
                 while stack_size == 0 or stack_size > stack_to_be_changed - 1 or stack_to_be_changed == 2*stack_size:
-                    stack_size = int(input("Give a valid size of the new stack"))
+                    stack_size = int(input("Give a valid size of the new stack\t"))
                 self.change_stack(stack_index, stack_to_be_changed,stack_size)
             else:
                 stack_size = 0
                 while stack_size == 0 or stack_size > self.state[0] - 1 or self.state[0] == stack_size * 2:
-                    stack_size = int(input("Give a valid size of the new stack"))
+                    stack_size = int(input("Give a valid size of the new stack\t"))
                 self.change_stack(0, self.state[0], stack_size)
+        return False
 
     def cpu_find_best_move(self):
-        pass
+        index, new_size = MinMaxPredictor.minmax(self.state, False)
+        return index, new_size
 
     def cpu_move(self):
-        if self.game_over():
-            print("Good Game, you won")
-        else:
-            index, size = self.cpu_find_best_move()
+        if not self.game_over():
+            (index, size), evaluation = self.cpu_find_best_move()
             self.change_stack(index, self.state[index], size)
+
+    def start_game(self):
+        game_on = True
+        while game_on:
+            print(self.state)
+            lost = self.player_move()
+            if not self.game_over():
+                print(self.state)
+                print("CPU's turn")
+            else:
+                game_on = False
+                if not lost:
+                    print("Good Game, you won")
+                continue
+            self.cpu_move()
