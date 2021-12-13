@@ -44,12 +44,14 @@ class Game:
         return False
 
     def cpu_find_best_move(self):
-        index, new_size = MinMaxPredictor.minmax(self.state, False)
-        return index, new_size
+        MinMaxPredictor.visited_states = {}
+        action, evaluation = MinMaxPredictor.minmax(self.state, False)
+        return action, evaluation
 
     def fast_cpu_find_best_move(self):
-        index, new_size = MinMaxPredictor.alpha_beta(self.state, False)
-        return index, new_size
+        MinMaxPredictor.visited_states = {}
+        action, evaluation = MinMaxPredictor.alpha_beta(self.state, False)
+        return action, evaluation
 
     def cpu_move(self):
         if not self.game_over():

@@ -1,4 +1,6 @@
 class MinMaxPredictor:
+    visited_states = {}
+
     @classmethod
     def actions(cls, state: list):
         output = []
@@ -42,29 +44,40 @@ class MinMaxPredictor:
         if cls.final(state):
             return (), cls.utility(state, turn)
 
+        key = " "
+        key = turn and key.join([str(num) for num in state])+" : 1" or key.join([str(num) for num in state])+" : -1"
+        if key in cls.visited_states:
+            return (), cls.visited_states[key]
+
         if turn:
             max_evaluation = -1000
             returned_action = ()
             for action in cls.actions(state):
-                act, evaluation = cls.minmax(cls.result(state, action), not turn)
+                _, evaluation = cls.minmax(cls.result(state, action), not turn)
                 if max_evaluation < evaluation:
                     max_evaluation = evaluation
                     returned_action = action
+            cls.visited_states[" ".join([str(num) for num in state])+" : 1"] = max_evaluation
             return returned_action, max_evaluation
         else:
             min_evaluation = 10000
             returned_action = ()
             for action in cls.actions(state):
-                taken_action, evaluation = cls.minmax(cls.result(state, action), not turn)
+                _, evaluation = cls.minmax(cls.result(state, action), not turn)
                 if min_evaluation > evaluation:
                     min_evaluation = evaluation
                     returned_action = action
+            cls.visited_states[" ".join([str(num) for num in state]) + " : -1"] = min_evaluation
             return returned_action, min_evaluation
 
     @classmethod
     def alpha_beta(cls, state: list, turn: bool, alpha: int = 10000, beta: int = -10000):
         if cls.final(state):
             return (), cls.utility(state, turn)
+        key = " "
+        key = turn and key.join([str(num) for num in state]) + " : 1" or key.join([str(num) for num in state]) + " : -1"
+        if key in cls.visited_states:
+            return (), cls.visited_states[key]
 
         if turn:
             max_evaluation = -1000
@@ -77,6 +90,7 @@ class MinMaxPredictor:
                 alpha = max(alpha, evaluation)
                 if beta <= alpha:
                     break
+            cls.visited_states[" ".join([str(num) for num in state]) + " : 1"] = max_evaluation
             return returned_action, max_evaluation
         else:
             min_evaluation = 10000
@@ -89,6 +103,7 @@ class MinMaxPredictor:
                 beta = min(beta, evaluation)
                 if beta <= alpha:
                     break
+            cls.visited_states[" ".join([str(num) for num in state]) + " : -1"] = min_evaluation
             return returned_action, min_evaluation
 
 
