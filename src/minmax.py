@@ -75,7 +75,7 @@ class MinMaxPredictor:
             return returned_action, min_evaluation, returned_number+1
 
     @classmethod
-    def alpha_beta(cls, state: list, turn: bool, alpha: int = 10000, beta: int = -10000, number_visited_states: int = 0):
+    def alpha_beta(cls, state: list, turn: bool, alpha: int = -10000, beta: int = 10000, number_visited_states: int = 0):
         if cls.final(state):
             return (), cls.utility(state, turn), number_visited_states + 1
         key = " "
